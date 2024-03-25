@@ -9,19 +9,23 @@ function addToDo(addBtn) {
     listsEle.innerHTML = '';
     const new_to_do = createToDoItem("added todo", "description", getDate(), "Low", "Write some notes");
 
-    let toDoLists = localStorage.getItem("toDoLists");
-    toDoLists = JSON.parse(toDoLists);
-    toDoLists.forEach((list) => {
+    try {
+        let toDoLists = localStorage.getItem("toDoLists");
+        toDoLists = JSON.parse(toDoLists);
+        toDoLists.forEach((list) => {
 
-        if (list.id.toString() === addBtn.id) {
-            console.log("true")
-            list.list.push(new_to_do);
-        }
-    })
+            if (list.id.toString() === addBtn.id) {
+                console.log("true")
+                list.list.push(new_to_do);
+            }
+        })
 
-    toDoLists = JSON.stringify(toDoLists);
-    localStorage.setItem("toDoLists", toDoLists);
-    loadListsFromStorage();
+        toDoLists = JSON.stringify(toDoLists);
+        localStorage.setItem("toDoLists", toDoLists);
+        loadListsFromStorage();
+    } catch (error) {
+        console.error("error data not found in storage: ", error.message)
+    }
 
 }
 
