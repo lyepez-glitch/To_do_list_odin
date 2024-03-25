@@ -1,4 +1,3 @@
-import { compareAsc, format } from "date-fns";
 class ToDoItem {
 
     constructor(title, description, dueDate, priority, notes, completed) {

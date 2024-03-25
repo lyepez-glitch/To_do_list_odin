@@ -1,7 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-import webpack from 'webpack'
-import { supportedLocales } from './config.js'
+const webpack = require('webpack')
+const supportedLocales = ["en-US", "de", "pl", "it"];
 module.exports = {
     mode: 'development',
     entry: './src/index.js',

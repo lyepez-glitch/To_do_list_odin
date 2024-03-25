@@ -1,5 +1,9 @@
 import { create_to_do_list } from "./ToDoList";
 import { createToDoItem } from './ToDoItem';
+import { addToDo, setPriority, deleteToDo, markComplete, addList } from './clickFunctions';
+import { format } from "date-fns";
+import getDate from './date';
+import './style.css';
 const loadListsFromStorage = (to_do_list) => {
 
 
@@ -11,43 +15,24 @@ const loadListsFromStorage = (to_do_list) => {
 
     toDoLists.forEach((todolist) => {
         console.log("todolist", todolist)
+        const todolistsCont = document.querySelector("#to_do_lists");
         const ul = document.createElement("ul");
-        const div = document.createElement("div");
-        const btn = document.createElement("button");
-        btn.textContent = "Add to do";
-        btn.id = todolist.id;
-        btn.addEventListener("click", function() {
-            let listsEle = document.querySelector("#to_do_lists");
-            listsEle.innerHTML = '';
-            const new_to_do = createToDoItem("added todo", "description", Date.now(), "Low", "Write some notes");
-
-            let toDoLists = localStorage.getItem("toDoLists");
-            toDoLists = JSON.parse(toDoLists);
-            toDoLists.forEach((list) => {
-                console.log("list id", typeof list.id)
-                console.log("btn id ", typeof btn.id)
-                if (list.id.toString() === btn.id) {
-                    console.log("true")
-                    list.list.push(new_to_do);
-                }
-            })
-
-            toDoLists = JSON.stringify(toDoLists);
-            localStorage.setItem("toDoLists", toDoLists);
-            loadListsFromStorage();
-
-
-
-
-        })
+        const listCont = document.createElement("div");
+        listCont.id = "to_do_list";
+        const addBtn = document.createElement("button");
+        addBtn.textContent = "Add to do";
+        addBtn.id = todolist.id;
+        addBtn.classList.add("addBtn");
+        addBtn.addEventListener("click", function() { addToDo(addBtn) })
         todolist.list.forEach((todo) => {
-
+            const toDoCont = document.createElement("div");
+            toDoCont.classList.add("todocont")
             const ul = document.createElement("ul");
             ul.classList.add("todo");
 
             for (const key in todo) {
 
-                if (key === "title" || key === "dueDate") {
+                if (key === "title" || key === "dueDate" || key === "completed") {
                     let li = document.createElement("li");
                     li.textContent = `${key}: ${todo[key]}`;
 
@@ -55,67 +40,34 @@ const loadListsFromStorage = (to_do_list) => {
                 }
 
             }
-            div.appendChild(ul)
-            div.appendChild(btn)
-            div.classList.add("to-do-list")
+            toDoCont.appendChild(ul)
+            toDoCont.id = todo.id;
+            toDoCont.classList.add(todo.priority)
+
+
             const priorityBtn = document.createElement("button")
             priorityBtn.textContent = "Set Priority";
 
-            priorityBtn.addEventListener("click", function() {
-                const todoCont = button.closest('.todo');
+            priorityBtn.addEventListener("click", function() { setPriority(priorityBtn) })
 
-                let toDoLists = localStorage.getItem("toDoLists");
-                toDoLists = JSON.parse(toDoLists);
-                toDoLists.forEach((list) => {
-                    list.list.forEach((todo) => {
-                        if (todo.id.toString() === todoCont.id.toString()) {
-                            todo.priority = "High";
-                        }
-                    })
-                })
-                toDoLists = JSON.stringify(toDoLists);
-                localStorage.setItem("toDoLists", toDoLists);
-            })
             const completedBtn = document.createElement("button");
 
             completedBtn.textContent = "Mark completed";
-            completedBtn.addEventListener("click", () => {
-                const todoCont = button.closest('.todo');
+            completedBtn.addEventListener("click", function() { markComplete(completedBtn) })
+            toDoCont.appendChild(priorityBtn);
+            toDoCont.appendChild(completedBtn);
+            const deleteBtn = document.createElement("button");
+            deleteBtn.addEventListener("click", function() { deleteToDo(deleteBtn) })
+            deleteBtn.textContent = "Delete To Do"
+            toDoCont.appendChild(deleteBtn)
+            listCont.appendChild(toDoCont)
 
-                let toDoLists = localStorage.getItem("toDoLists");
-                toDoLists = JSON.parse(toDoLists);
-                toDoLists.forEach((list) => {
-                    list.list.forEach((todo) => {
-                        if (todo.id.toString() === todoCont.id.toString()) {
-                            todo.setCompleted(true);
-                        }
-                    })
-                })
-                toDoLists = JSON.stringify(toDoLists);
-                localStorage.setItem("toDoLists", toDoLists);
-            })
-            div.appendChild(priorityBtn);
-            div.appendChild(completedBtn);
-            const deleteBtn = document.querySelector("button");
-            deleteBtn.addEventListener("click", () => {
-                const todoCont = button.closest('.todo');
-
-                let toDoLists = localStorage.getItem("toDoLists");
-                toDoLists = JSON.parse(toDoLists);
-                toDoLists.forEach((list, index) => {
-                    list.list.forEach((todo) => {
-                        if (todo.id.toString() === todoCont.id.toString()) {
-                            list.list.splice(index, 1);
-                        }
-                    })
-                })
-                toDoLists = JSON.stringify(toDoLists);
-                localStorage.setItem("toDoLists", toDoLists);
-            })
-            const todolistsCont = document.querySelector("#to_do_lists");
-            todolistsCont.appendChild(div);
 
         })
+        listCont.classList.add("to-do-list");
+        listCont.appendChild(addBtn);
+
+        todolistsCont.appendChild(listCont);
     })
 
 }
@@ -124,9 +76,9 @@ const loadPage = () => {
     localStorage.clear();
     let toDoLists = [];
     const to_do_list = create_to_do_list();
-    const todo1 = createToDoItem("todo1", "description1", Date.now(), "Low", "Write some notes");
-    const todo2 = createToDoItem("todo2", "description2", Date.now(), "Low", "Write some notes");
-    const todo3 = createToDoItem("todo3", "description3", Date.now(), "Low", "Write some notes");
+    const todo1 = createToDoItem("todo1", "description1", getDate(), "Low", "Write some notes");
+    const todo2 = createToDoItem("todo2", "description2", getDate(), "Low", "Write some notes");
+    const todo3 = createToDoItem("todo3", "description3", getDate(), "Low", "Write some notes");
     to_do_list.addItem(todo1);
     to_do_list.addItem(todo2);
     to_do_list.addItem(todo3);
@@ -141,22 +93,9 @@ const loadPage = () => {
 
 
 
-    add_to_do_list_Btn.addEventListener("click", function() {
-        let listsEle = document.querySelector("#to_do_lists");
-        listsEle.innerHTML = '';
-        let toDoLists = localStorage.getItem("toDoLists");
-        toDoLists = JSON.parse(toDoLists);
-        const to_do_list = create_to_do_list();
-        const newToDo = createToDoItem("do laundry", "laundry", Date.now(), "Low", "Write some notes");
-        to_do_list.addItem(newToDo);
-        console.log("to_do_list", to_do_list)
-        toDoLists.push(to_do_list);
-        toDoLists = JSON.stringify(toDoLists);
-        localStorage.setItem("toDoLists", toDoLists);
-        loadListsFromStorage();
-    });
+    add_to_do_list_Btn.addEventListener("click", addList);
     loadListsFromStorage();
 
 }
 
-export { loadPage };
+export { loadPage, loadListsFromStorage };
