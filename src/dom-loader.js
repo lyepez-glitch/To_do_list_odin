@@ -23,6 +23,34 @@ const editToDo = (hoveredEle) => {
                         input.value = todo[key];
                         let label = document.createElement("label");
                         label.for = key;
+                        hoveredEle.style.width = "50%";
+                        input.addEventListener("change", (event) => {
+                            const id = hoveredEle.id;
+                            let toDoLists = localStorage.getItem("toDoLists");
+                            toDoLists = JSON.parse(toDoLists);
+                            toDoLists.forEach((list) => {
+                                    list.list.forEach((todo) => {
+
+                                        if (todo.id.toString() === hoveredEle.id.toString()) {
+                                            console.log(true)
+                                            todo[input.id] = input.value;
+                                        }
+                                    })
+                                })
+                                // iterate through all lists in local storage
+                                //iterate through all todos in lists
+                                // if todo id matches hoveredele id
+                                //find the key that is input.id
+                                //set that key value to input.value
+                            console.log("val", input.value)
+                            toDoLists = JSON.stringify(toDoLists);
+                            localStorage.setItem("toDoLists", toDoLists);
+                            let listsEle = document.querySelector("#to_do_lists");
+                            listsEle.innerHTML = '';
+                            loadListsFromStorage();
+
+                        })
+
 
                         let li = document.createElement("li");
                         li.appendChild(label)
@@ -105,13 +133,17 @@ const loadListsFromStorage = () => {
                 toDoCont.addEventListener("dblclick", (event) => {
                     console.log("mouseover event");
                     let hoveredEle = event.target;
-                    if (hoveredEle.contentEditable === "false") {
+                    if (hoveredEle.contentEditable == "false") {
                         editToDo(hoveredEle);
                         hoveredEle.contentEditable = "true";
                     } else {
                         hoveredEle.contentEditable = "false";
+
+
                         let listsEle = document.querySelector("#to_do_lists");
                         listsEle.innerHTML = '';
+
+                        //this is where grab the values of the todocont ele and update them in local storage
                         loadListsFromStorage();
                     }
 
@@ -119,30 +151,10 @@ const loadListsFromStorage = () => {
 
                 });
 
-                // toDoCont.addEventListener("mouseout", (event) => {
-                //     console.log("mouseout event");
-                //     let listsEle = document.querySelector("#to_do_lists");
-                //     listsEle.innerHTML = '';
-                //     loadListsFromStorage();
 
-                // });
-                // toDoCont.addEventListener("click", () => {
 
-                //     let listsEle = document.querySelector("#to_do_lists");
-                //     listsEle.innerHTML = '';
-                //     loadListsFromStorage();
-                //     // Add your double click event handling code here
-                // });
-                // let listsEles = Array.from(document.querySelectorAll(".to_do_list"));
-                // listsEles.forEach((listEle) => {
-                //     listEle.addEventListener("mouseout", (event) => {
-                //         console.log("mouseout event");
-                //         let listsEle = document.querySelector("#to_do_lists");
-                //         listsEle.innerHTML = '';
-                //         loadListsFromStorage();
 
-                //     });
-                // })
+
 
                 listCont.appendChild(toDoCont)
 
