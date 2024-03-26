@@ -4,7 +4,48 @@ import { addToDo, setPriority, deleteToDo, markComplete, addList } from './click
 import { format } from "date-fns";
 import getDate from './date';
 import './style.css';
-const loadListsFromStorage = (to_do_list) => {
+
+const editToDo = (hoveredEle) => {
+
+
+    hoveredEle.innerHTML = "";
+    let toDoLists = localStorage.getItem("toDoLists");
+    toDoLists = JSON.parse(toDoLists);
+    toDoLists.forEach((todolist) => {
+        todolist.list.forEach((todo) => {
+            if (hoveredEle.id.toString() === todo.id.toString()) {
+                const ul = document.createElement("ul");
+                for (const key in todo) {
+
+                    if (key === "title" || key === "dueDate" || key === "completed") {
+                        let input = document.createElement("input");
+                        input.id = key;
+                        input.value = todo[key];
+                        let label = document.createElement("label");
+                        label.for = key;
+
+                        let li = document.createElement("li");
+                        li.appendChild(label)
+                        li.appendChild(input);
+                        ul.appendChild(li);
+
+                    }
+
+                }
+                hoveredEle.appendChild(ul);
+            }
+        })
+    })
+
+
+
+
+
+
+
+}
+
+const loadListsFromStorage = () => {
 
 
     const to_do_lists = document.querySelector("#to_do_lists");
@@ -42,6 +83,7 @@ const loadListsFromStorage = (to_do_list) => {
                 }
                 toDoCont.appendChild(ul)
                 toDoCont.id = todo.id;
+                toDoCont.contentEditable = "false";
                 toDoCont.classList.add(todo.priority)
 
 
@@ -60,6 +102,48 @@ const loadListsFromStorage = (to_do_list) => {
                 deleteBtn.addEventListener("click", function() { deleteToDo(deleteBtn) })
                 deleteBtn.textContent = "Delete To Do"
                 toDoCont.appendChild(deleteBtn)
+                toDoCont.addEventListener("dblclick", (event) => {
+                    console.log("mouseover event");
+                    let hoveredEle = event.target;
+                    if (hoveredEle.contentEditable === "false") {
+                        editToDo(hoveredEle);
+                        hoveredEle.contentEditable = "true";
+                    } else {
+                        hoveredEle.contentEditable = "false";
+                        let listsEle = document.querySelector("#to_do_lists");
+                        listsEle.innerHTML = '';
+                        loadListsFromStorage();
+                    }
+
+
+
+                });
+
+                // toDoCont.addEventListener("mouseout", (event) => {
+                //     console.log("mouseout event");
+                //     let listsEle = document.querySelector("#to_do_lists");
+                //     listsEle.innerHTML = '';
+                //     loadListsFromStorage();
+
+                // });
+                // toDoCont.addEventListener("click", () => {
+
+                //     let listsEle = document.querySelector("#to_do_lists");
+                //     listsEle.innerHTML = '';
+                //     loadListsFromStorage();
+                //     // Add your double click event handling code here
+                // });
+                // let listsEles = Array.from(document.querySelectorAll(".to_do_list"));
+                // listsEles.forEach((listEle) => {
+                //     listEle.addEventListener("mouseout", (event) => {
+                //         console.log("mouseout event");
+                //         let listsEle = document.querySelector("#to_do_lists");
+                //         listsEle.innerHTML = '';
+                //         loadListsFromStorage();
+
+                //     });
+                // })
+
                 listCont.appendChild(toDoCont)
 
 
